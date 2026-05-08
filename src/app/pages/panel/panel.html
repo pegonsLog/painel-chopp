@@ -1,0 +1,47 @@
+<main class="panel">
+  <header class="panel__header">
+    <div class="logo-mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M14 18h28l-3 34a6 6 0 0 1-6 5H23a6 6 0 0 1-6-5L14 18Z"
+          fill="#f5c06c"
+          stroke="#7a3b00"
+          stroke-width="2"
+        />
+        <path d="M42 22h6a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6h-4" fill="none" stroke="#7a3b00" stroke-width="2" />
+        <ellipse cx="28" cy="18" rx="18" ry="4" fill="#fff4d6" stroke="#7a3b00" stroke-width="2" />
+        <path d="M20 14c0-3 3-6 8-6s8 3 8 6" fill="#fff" stroke="#7a3b00" stroke-width="2" />
+      </svg>
+    </div>
+    <div class="panel__title">
+      <h1>{{ brand() }}</h1>
+      <span class="tagline">{{ tagline() }}</span>
+    </div>
+  </header>
+
+  @if (beers().length === 0) {
+    <div class="empty">
+      <p>Nenhum chope cadastrado ainda.</p>
+    </div>
+  } @else {
+    <section class="panel__grid" aria-label="Lista de chopes">
+      @for (beer of beers(); track beer.id ?? beer.order) {
+        <app-beer-card [beer]="beer" />
+      }
+    </section>
+  }
+
+  <a
+    class="admin-fab"
+    routerLink="/admin"
+    aria-label="Abrir administração"
+    title="Administração"
+  >
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M19.14 12.936a7.505 7.505 0 0 0 0-1.872l2.036-1.58a.5.5 0 0 0 .12-.637l-1.928-3.34a.5.5 0 0 0-.608-.22l-2.4.96a7.5 7.5 0 0 0-1.62-.94l-.36-2.556A.5.5 0 0 0 13.88 2h-3.76a.5.5 0 0 0-.5.42l-.36 2.556a7.5 7.5 0 0 0-1.62.94l-2.4-.96a.5.5 0 0 0-.608.22L2.704 8.516a.5.5 0 0 0 .12.637l2.036 1.58a7.505 7.505 0 0 0 0 1.872l-2.036 1.58a.5.5 0 0 0-.12.637l1.928 3.34a.5.5 0 0 0 .608.22l2.4-.96c.504.376 1.04.688 1.62.94l.36 2.556a.5.5 0 0 0 .5.422h3.76a.5.5 0 0 0 .5-.422l.36-2.556a7.5 7.5 0 0 0 1.62-.94l2.4.96a.5.5 0 0 0 .608-.22l1.928-3.34a.5.5 0 0 0-.12-.637l-2.036-1.58zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"
+      />
+    </svg>
+  </a>
+</main>

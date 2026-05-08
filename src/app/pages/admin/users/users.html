@@ -1,0 +1,70 @@
+<div class="users-admin">
+  <section class="card">
+    <h2>{{ isEditing() ? 'Editar usuário' : 'Novo usuário' }}</h2>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <div class="grid-2">
+        <label class="field">
+          <span>E-mail *</span>
+          <input type="email" autocomplete="username" formControlName="email" />
+          @if (isEditing()) {
+            <small class="hint">O e-mail é o identificador de login e não pode ser alterado aqui.</small>
+          }
+        </label>
+
+        <label class="field">
+          <span>Nome de exibição *</span>
+          <input type="text" formControlName="displayName" />
+        </label>
+      </div>
+
+      @if (!isEditing()) {
+        <label class="field">
+          <span>Senha *</span>
+          <input type="password" autocomplete="new-password" formControlName="password" />
+          <small class="hint">Mínimo 6 caracteres. O usuário poderá alterá-la depois via "Esqueci minha senha".</small>
+        </label>
+      } @else {
+        <p class="hint">
+          Para alterar a senha, envie um e-mail de redefinição na lista abaixo.
+        </p>
+      }
+
+      @if (feedback(); as fb) {
+        <p class="feedback" [class.feedback--error]="fb.type === 'error'">{{ fb.message }}</p>
+      }
+
+      <div class="actions">
+        <button type="submit" class="primary" [disabled]="saving()">
+          {{ saving() ? 'Salvando...' : (isEditing() ? 'Salvar alterações' : 'Cadastrar usuário') }}
+        </button>
+        @if (isEditing()) {
+          <button type="button" class="ghost" (click)="resetForm()">Cancelar</button>
+        }
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Usuários cadastrados</h2>
+    @if (users().length === 0) {
+      <p class="hint">Nenhum usuário cadastrado.</p>
+    } @else {
+      <ul class="user-list">
+        @for (user of users(); track user.id) {
+          <li class="user-row">
+            <div class="user-row__info">
+              <strong>{{ user.displayName }}</strong>
+              <span class="muted">{{ user.email }}</span>
+            </div>
+            <div class="user-row__actions">
+              <button type="button" class="ghost" (click)="edit(user)">Editar</button>
+              <button type="button" class="ghost" (click)="sendReset(user)">Redefinir senha</button>
+              <button type="button" class="danger" (click)="remove(user)">Remover acesso</button>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>

@@ -1,0 +1,29 @@
+<main class="login">
+  <div class="card">
+    <a routerLink="/" class="back-link">← Voltar ao painel</a>
+    <h1>Entrar</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <label class="field">
+        <span>E-mail</span>
+        <input type="email" autocomplete="username" formControlName="email" />
+      </label>
+      <label class="field">
+        <span>Senha</span>
+        <input type="password" autocomplete="current-password" formControlName="password" />
+      </label>
+
+      @if (feedback(); as fb) {
+        <p class="feedback" [class.feedback--error]="fb.type === 'error'">{{ fb.message }}</p>
+      }
+
+      <button type="submit" class="primary" [disabled]="submitting()">
+        {{ submitting() ? 'Entrando...' : 'Entrar' }}
+      </button>
+
+      <button type="button" class="link" (click)="sendReset()" [disabled]="submitting()">
+        Esqueci minha senha
+      </button>
+    </form>
+  </div>
+</main>

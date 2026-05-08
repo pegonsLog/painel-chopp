@@ -1,0 +1,49 @@
+<article class="beer-card">
+  <!-- Seção 1: Número -->
+  <div class="section-order">
+    <div class="order-circle">
+      <span>{{ beer().order }}</span>
+    </div>
+  </div>
+
+  <!-- Seção 2: Rótulo -->
+  <div class="section-label">
+    @if (beer().labelUrl) {
+      <div class="label label--image">
+        <img [src]="beer().labelUrl" [alt]="beer().name" loading="lazy" />
+      </div>
+    } @else {
+      <div class="label" [style]="labelStyle()">
+        <div class="label-inner">
+          <span class="brewery">{{ beer().brewery }}</span>
+          <strong class="beer-name">{{ beer().name }}</strong>
+          <span class="style">{{ beer().style }}</span>
+          @if (beer().abv || beer().ibu) {
+            <div class="specs">
+              @if (beer().abv) { <span>ABV {{ beer().abv }}</span> }
+              @if (beer().ibu) { <span>IBU {{ beer().ibu }}</span> }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Seção 3: Composição -->
+  <div class="section-description">
+    <p class="description">{{ beer().description }}</p>
+  </div>
+
+  <!-- Seção 4: Tamanhos e preços -->
+  <div class="section-prices">
+    <ul class="prices">
+      @for (size of beer().sizes; track $index) {
+        <li>
+          <span class="volume">{{ formatVolume(size) }}</span>
+          <span class="unit">{{ formatUnit(size) }}</span>
+          <span class="price">{{ formatPrice(size) | number:'1.2-2':'pt-BR' }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+</article>

@@ -1,0 +1,20 @@
+<main class="admin-layout">
+  <header class="admin-layout__header">
+    <div class="title">
+      <a routerLink="/" class="back-link">← Painel</a>
+      <h1>Administração</h1>
+    </div>
+
+    <nav class="tabs" aria-label="Seções da administração">
+      <a routerLink="chopes" routerLinkActive="active">Chopes</a>
+      <a routerLink="usuarios" routerLinkActive="active">Usuários</a>
+    </nav>
+
+    <div class="session">
+      <span class="session__user">Olá, {{ auth.currentUser()?.displayName }}</span>
+      <button type="button" class="ghost" (click)="logout()">Sair</button>
+    </div>
+  </header>
+
+  <router-outlet />
+</main>
