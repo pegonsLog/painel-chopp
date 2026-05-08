@@ -85,6 +85,12 @@ fieldset legend {
   align-items: end;
 }
 
+.sizes__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .volume-input {
   display: flex;
   gap: 0;

@@ -64,7 +64,12 @@
                     aria-label="Remover tamanho">✕</button>
           </div>
         }
-        <button type="button" class="ghost" (click)="addSize()">+ Adicionar tamanho</button>
+        <div class="sizes__actions">
+          <button type="button" class="ghost" (click)="addSize()">+ Adicionar tamanho</button>
+          <button type="button" class="ghost danger" (click)="resetSizes()" [disabled]="sizes.length <= 1 && !sizes.at(0).dirty">
+            ↺ Resetar tamanhos
+          </button>
+        </div>
       </fieldset>
 
       <fieldset class="label-upload">

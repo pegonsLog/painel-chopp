@@ -86,11 +86,11 @@ export class BeersAdmin {
     });
   }
 
-  private createSizeGroup(volume = 0, unit: 'ml' | 'l' = 'ml', price = 0): SizeFormGroup {
+  private createSizeGroup(volume: number | null = null, unit: 'ml' | 'l' = 'ml', price: number | null = null): SizeFormGroup {
     return this.fb.group({
-      volume: this.fb.nonNullable.control(volume, [Validators.required, Validators.min(1)]),
+      volume: this.fb.nonNullable.control(volume ?? 0, [Validators.required, Validators.min(1)]),
       unit: this.fb.nonNullable.control(unit),
-      price: this.fb.nonNullable.control(price, [Validators.required, Validators.min(0)]),
+      price: this.fb.nonNullable.control(price ?? 0, [Validators.required, Validators.min(0.01)]),
     });
   }
 
@@ -208,13 +208,32 @@ export class BeersAdmin {
     }
   }
 
+  protected resetSizes(): void {
+    this.sizes.clear();
+    this.sizes.push(this.createSizeGroup());
+  }
+
   protected async submit(): Promise<void> {
+    // Força atualização dos valores numéricos para evitar falsos positivos de validação
+    for (const group of this.sizes.controls) {
+      const vol = group.controls.volume;
+      const prc = group.controls.price;
+      vol.setValue(Number(vol.value) || 0);
+      prc.setValue(Number(prc.value) || 0);
+      vol.updateValueAndValidity();
+      prc.updateValueAndValidity();
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.feedback.set({
-        type: 'error',
-        message: 'Preencha todos os campos obrigatórios (volume deve ser maior que 0).',
-      });
+      // Mensagem mais específica sobre qual campo está inválido
+      const sizeErrors = this.sizes.controls.some(
+        (g) => g.controls.volume.invalid || g.controls.price.invalid
+      );
+      const msg = sizeErrors
+        ? 'Verifique os tamanhos: volume deve ser maior que 0 e preço deve ser maior que R$ 0,00.'
+        : 'Preencha todos os campos obrigatórios.';
+      this.feedback.set({ type: 'error', message: msg });
       return;
     }
 
