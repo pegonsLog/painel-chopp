@@ -286,8 +286,19 @@ button.danger:hover {
 
 @media (max-width: 640px) {
   .grid-2 { grid-template-columns: 1fr; }
-  .size-row { grid-template-columns: 1fr 1fr; }
-  .size-row .icon-btn { grid-column: span 2; justify-self: start; }
+  .size-row {
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+  }
+  .size-row .field--volume {
+    grid-column: 1 / -1;
+  }
+  .size-row .icon-btn {
+    align-self: end;
+  }
+  .sizes__actions {
+    flex-direction: column;
+  }
   .beer-row { grid-template-columns: 40px 1fr; }
   .beer-row__actions { grid-column: span 2; justify-content: flex-end; }
   .beer-row__thumb { width: 40px; height: 40px; font-size: 1rem; }

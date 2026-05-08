@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 
 import { authGuard } from './guards/auth.guard';
+import { panelGuard } from './guards/panel.guard';
 
 export const routes: Routes = [
   {
     path: '',
+    canActivate: [panelGuard],
     loadComponent: () => import('./pages/panel/panel').then((m) => m.Panel),
   },
   {
