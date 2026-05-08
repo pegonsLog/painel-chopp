@@ -61,3 +61,4 @@ npm start          # servidor de dev em http://localhost:4200
 npm run build      # build de produção em dist/painel-chopp/browser
 npm test           # testes unitários (Vitest)
 ```
+# painel-chopp
