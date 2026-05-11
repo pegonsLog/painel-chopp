@@ -1,0 +1,110 @@
+<div class="beer-form-page">
+  <header class="page-header">
+    <button type="button" class="ghost" (click)="goBack()">← Chopes cadastrados</button>
+  </header>
+
+  <section class="card">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <div class="grid-2">
+        <label class="field">
+          <span>Ordem (nº da tampa) *</span>
+          <input type="number" min="1" formControlName="order" placeholder="Ex.: 1" />
+        </label>
+
+        <label class="field">
+          <span>Cervejaria *</span>
+          <input type="text" formControlName="brewery" placeholder="Ex.: Stardust" />
+        </label>
+
+        <label class="field">
+          <span>Nome do chope *</span>
+          <input type="text" formControlName="name" placeholder="Ex.: Spacetime Eclipse" />
+        </label>
+
+        <label class="field">
+          <span>Estilo *</span>
+          <input type="text" formControlName="style" placeholder="Ex.: NEIPA" />
+        </label>
+
+        <label class="field">
+          <span>ABV</span>
+          <input type="text" formControlName="abv" placeholder="Ex.: 7%" />
+        </label>
+
+        <label class="field">
+          <span>IBU</span>
+          <input type="text" formControlName="ibu" placeholder="Ex.: 53" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Descrição / composição</span>
+        <textarea rows="3" formControlName="description"
+                  placeholder="Ex.: Cerveja forte com aroma e sabor marcantes de frutas cítricas."></textarea>
+      </label>
+
+      <fieldset class="sizes" formArrayName="sizes">
+        <legend>Tamanhos e preços *</legend>
+        @for (group of sizes.controls; track $index; let i = $index) {
+          <div class="size-row" [formGroupName]="i">
+            <label class="field field--volume">
+              <span>Volume</span>
+              <div class="volume-input">
+                <input type="number" min="1" step="1" formControlName="volume" placeholder="Ex.: 280" />
+                <select formControlName="unit" aria-label="Unidade de medida">
+                  <option value="ml">ml</option>
+                  <option value="l">L</option>
+                </select>
+              </div>
+            </label>
+            <label class="field">
+              <span>Preço (R$)</span>
+              <input type="number" min="0" step="0.01" formControlName="price" />
+            </label>
+            <button type="button" class="icon-btn danger"
+                    (click)="removeSize(i)" [disabled]="sizes.length <= 1"
+                    aria-label="Remover tamanho">✕</button>
+          </div>
+        }
+        <div class="sizes__actions">
+          <button type="button" class="ghost" (click)="addSize()">+ Adicionar tamanho</button>
+          <button type="button" class="ghost danger" (click)="resetSizes()" [disabled]="sizes.length <= 1 && !sizes.at(0).dirty">
+            ↺ Resetar tamanhos
+          </button>
+        </div>
+      </fieldset>
+
+      <fieldset class="label-upload">
+        <legend>Rótulo</legend>
+        <input type="file" accept="image/*" (change)="onLabelSelected($event)" />
+        <small class="hint">Tamanho recomendado: 200 × 250 pixels (proporção 4:5) para se ajustar perfeitamente na seção.</small>
+        @if (labelPreviewUrl()) {
+          <div class="preview">
+            <img [src]="labelPreviewUrl()!" alt="Prévia do rótulo selecionado" />
+            <small>Prévia local (não enviada ainda)</small>
+            <button type="button" class="ghost" (click)="clearLabel()">Remover imagem</button>
+          </div>
+        } @else if (existingLabelUrl()) {
+          <div class="preview">
+            <img [src]="existingLabelUrl()!" alt="Rótulo atual" />
+            <small>Rótulo atual - envie outra imagem para substituir</small>
+            <button type="button" class="danger" (click)="removeExistingLabel()">Remover rótulo</button>
+          </div>
+        } @else {
+          <p class="hint">Opcional: imagem que será exibida no card do painel. Sem imagem, será exibido o gradiente padrão.</p>
+        }
+      </fieldset>
+
+      @if (feedback(); as fb) {
+        <p class="feedback" [class.feedback--error]="fb.type === 'error'">{{ fb.message }}</p>
+      }
+
+      <div class="actions">
+        <button type="submit" class="primary" [disabled]="saving()">
+          {{ saving() ? 'Salvando...' : (isEditing() ? 'Salvar alterações' : 'Cadastrar chope') }}
+        </button>
+        <button type="button" class="ghost" (click)="goBack()">Cancelar</button>
+      </div>
+    </form>
+  </section>
+</div>

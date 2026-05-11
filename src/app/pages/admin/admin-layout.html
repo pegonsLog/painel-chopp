@@ -1,8 +1,10 @@
 <main class="admin-layout">
   <header class="admin-layout__header">
     <div class="title">
-      <a routerLink="/" class="back-link">← Painel</a>
-      <h1>Administração</h1>
+      @if (!isFormPage && !isPreviewPage) {
+        <a routerLink="/" class="back-link">← Painel</a>
+      }
+      <h1>{{ isFormPage ? 'Cadastrar chopp' : (isPreviewPage ? 'Pré-visualização' : 'Administração') }}</h1>
     </div>
 
     <nav class="tabs" aria-label="Seções da administração">

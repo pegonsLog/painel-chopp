@@ -1,0 +1,33 @@
+<div class="preview-page">
+  <header class="preview-header">
+    <button type="button" class="ghost" (click)="goBack()">← Voltar</button>
+    <span class="preview-badge">Pré-visualização do painel</span>
+  </header>
+
+  <div class="preview-wrapper">
+    <div class="preview-viewport">
+      <div class="panel">
+        <header class="panel__header">
+          <div class="panel__title">
+            <h1>{{ brand() }}</h1>
+            <span class="tagline">{{ tagline() }}</span>
+          </div>
+        </header>
+
+        @if (beers().length === 0) {
+          <div class="empty">
+            <p>Nenhum chope cadastrado ainda.</p>
+          </div>
+        } @else {
+          <section class="panel__grid" aria-label="Lista de chopes">
+            @for (beer of beers(); track beer.id ?? beer.order) {
+              <app-beer-card [beer]="beer" />
+            }
+          </section>
+        }
+      </div>
+    </div>
+  </div>
+
+  <p class="preview-hint">Arraste para os lados para ver o painel completo. Esta é a visualização exata da TV.</p>
+</div>

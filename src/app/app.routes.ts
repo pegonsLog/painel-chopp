@@ -26,6 +26,21 @@ export const routes: Routes = [
           import('./pages/admin/beers/beers').then((m) => m.BeersAdmin),
       },
       {
+        path: 'chopes/novo',
+        loadComponent: () =>
+          import('./pages/admin/beer-form/beer-form').then((m) => m.BeerForm),
+      },
+      {
+        path: 'chopes/editar/:id',
+        loadComponent: () =>
+          import('./pages/admin/beer-form/beer-form').then((m) => m.BeerForm),
+      },
+      {
+        path: 'preview',
+        loadComponent: () =>
+          import('./pages/admin/panel-preview/panel-preview').then((m) => m.PanelPreview),
+      },
+      {
         path: 'usuarios',
         loadComponent: () =>
           import('./pages/admin/users/users').then((m) => m.UsersAdmin),
