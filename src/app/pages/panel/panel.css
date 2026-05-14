@@ -19,49 +19,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
   padding: 0.75rem 0 1.5rem;
 }
 
-.logo-mark {
-  width: 54px;
-  height: 54px;
-  flex-shrink: 0;
-}
-
-.logo-mark svg {
-  width: 100%;
-  height: 100%;
-}
-
-.panel__title {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1;
-}
-
-.panel__title h1 {
-  margin: 0;
-  font-family: 'Pacifico', 'Brush Script MT', cursive;
-  font-size: 3.4rem;
-  color: #ff89b0;
-  text-shadow:
-    -1px -1px 0 #fff,
-    1px -1px 0 #fff,
-    -1px 1px 0 #fff,
-    1px 1px 0 #fff,
-    0 4px 10px rgba(0, 0, 0, 0.6);
-  letter-spacing: 0.02em;
-}
-
-.tagline {
-  margin-top: -0.25rem;
-  font-family: 'Georgia', serif;
-  font-style: italic;
-  font-size: 1.1rem;
-  color: #f5d0d0;
-  letter-spacing: 0.2em;
+.panel__header-img {
+  max-height: 121px;
+  width: auto;
+  object-fit: contain;
 }
 
 .admin-fab {
@@ -136,8 +100,8 @@ app-beer-card {
     gap: 0.75rem;
     padding: 1.5rem 0.25rem 1rem;
   }
-  .panel__title h1 {
-    font-size: 2.4rem;
+  .panel__header-img {
+    max-height: 80px;
   }
   .panel {
     padding: 1rem 0.75rem 1.5rem;
@@ -150,18 +114,10 @@ app-beer-card {
     gap: 1rem;
   }
   .panel__header {
-    gap: 0.5rem;
     padding: 0.5rem 0 1rem;
   }
-  .panel__title h1 {
-    font-size: 1.8rem;
-  }
-  .tagline {
-    font-size: 0.85rem;
-  }
-  .logo-mark {
-    width: 40px;
-    height: 40px;
+  .panel__header-img {
+    max-height: 60px;
   }
   .panel {
     padding: 0.75rem 0.5rem 1rem;
