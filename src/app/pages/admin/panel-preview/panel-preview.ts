@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 
@@ -17,9 +17,6 @@ const MAX_TAPS = 8;
 export class PanelPreview {
   private readonly beerService = inject(BeerService);
   private readonly router = inject(Router);
-
-  protected readonly brand = signal('Camargo Bier');
-  protected readonly tagline = signal('brew pub');
 
   private readonly allBeers = toSignal(this.beerService.list(), { initialValue: [] });
 
