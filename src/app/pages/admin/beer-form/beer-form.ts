@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   FormArray,
   FormBuilder,
@@ -11,7 +11,9 @@ import {
 } from '@angular/forms';
 
 import { BeerService } from '../../../services/beer.service';
-import { Beer, BeerSize, parseSizeFields } from '../../../models/beer.model';
+import { LabelService } from '../../../services/label.service';
+import { Beer, parseSizeFields } from '../../../models/beer.model';
+import { Label } from '../../../models/label.model';
 
 type SizeFormGroup = FormGroup<{
   volume: FormControl<number>;
@@ -32,7 +34,7 @@ type BeerFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-beer-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './beer-form.html',
   styleUrl: './beer-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,23 +42,27 @@ type BeerFormGroup = FormGroup<{
 export class BeerForm implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly beerService = inject(BeerService);
+  private readonly labelService = inject(LabelService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
   private readonly beers = toSignal(this.beerService.list(), { initialValue: [] as Beer[] });
+  protected readonly labels = toSignal(this.labelService.list(), { initialValue: [] as Label[] });
 
   protected readonly editingId = signal<string | null>(null);
-  protected readonly labelFile = signal<File | null>(null);
-  protected readonly labelPreviewUrl = signal<string | null>(null);
-  protected readonly existingLabelUrl = signal<string | null>(null);
-  protected readonly existingLabelPath = signal<string | null>(null);
-  protected readonly removeLabelOnSave = signal(false);
+  protected readonly selectedLabelId = signal<string | null>(null);
   protected readonly saving = signal(false);
   protected readonly feedback = signal<{ type: 'success' | 'error'; message: string } | null>(null);
 
   protected readonly form: BeerFormGroup = this.buildForm();
 
   protected readonly isEditing = computed(() => !!this.editingId());
+
+  protected readonly selectedLabel = computed(() => {
+    const id = this.selectedLabelId();
+    if (!id) return null;
+    return this.labels().find((l) => l.id === id) ?? null;
+  });
 
   get sizes(): FormArray<SizeFormGroup> {
     return this.form.controls.sizes;
@@ -73,7 +79,6 @@ export class BeerForm implements OnInit {
   }
 
   private loadBeer(id: string): void {
-    // Espera os dados carregarem e preenche o form
     const interval = setInterval(() => {
       const beer = this.beers().find((b) => b.id === id);
       if (beer) {
@@ -81,13 +86,12 @@ export class BeerForm implements OnInit {
         this.populateForm(beer);
       }
     }, 100);
-    // Timeout de segurança
     setTimeout(() => clearInterval(interval), 5000);
   }
 
   private populateForm(beer: Beer): void {
-    this.existingLabelUrl.set(beer.labelUrl ?? null);
-    this.existingLabelPath.set(beer.labelPath ?? null);
+    // Seleciona o rótulo vinculado (se houver)
+    this.selectedLabelId.set(beer.labelId ?? null);
 
     const sizeGroups: SizeFormGroup[] = [];
     for (const size of beer.sizes) {
@@ -145,40 +149,8 @@ export class BeerForm implements OnInit {
     this.sizes.push(this.createSizeGroup());
   }
 
-  protected onLabelSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0] ?? null;
-    this.labelFile.set(file);
-
-    const current = this.labelPreviewUrl();
-    if (current) URL.revokeObjectURL(current);
-
-    this.labelPreviewUrl.set(file ? URL.createObjectURL(file) : null);
-    this.removeLabelOnSave.set(false);
-  }
-
-  protected clearLabel(): void {
-    this.labelFile.set(null);
-    const current = this.labelPreviewUrl();
-    if (current) URL.revokeObjectURL(current);
-    this.labelPreviewUrl.set(null);
-  }
-
-  protected async removeExistingLabel(): Promise<void> {
-    const path = this.existingLabelPath();
-    const editingId = this.editingId();
-    if (!editingId) return;
-
-    try {
-      await this.beerService.removeLabelFromBeer(editingId, path);
-      this.existingLabelUrl.set(null);
-      this.existingLabelPath.set(null);
-      this.removeLabelOnSave.set(false);
-      this.feedback.set({ type: 'success', message: 'Rótulo removido.' });
-    } catch (err) {
-      console.error(err);
-      this.feedback.set({ type: 'error', message: 'Falha ao remover o rótulo.' });
-    }
+  protected selectLabel(labelId: string | null): void {
+    this.selectedLabelId.set(labelId);
   }
 
   protected goBack(): void {
@@ -231,28 +203,7 @@ export class BeerForm implements OnInit {
     this.feedback.set(null);
 
     try {
-      let labelUrl = this.existingLabelUrl();
-      let labelPath = this.existingLabelPath();
-      const file = this.labelFile();
-
-      if (this.removeLabelOnSave() && labelPath) {
-        try {
-          await this.beerService.deleteLabel(labelPath);
-        } catch { /* ignora */ }
-        labelUrl = null;
-        labelPath = null;
-      }
-
-      if (file) {
-        if (labelPath) {
-          try {
-            await this.beerService.deleteLabel(labelPath);
-          } catch { /* ignora */ }
-        }
-        const uploaded = await this.beerService.uploadLabel(file, raw.order);
-        labelUrl = uploaded.url;
-        labelPath = uploaded.path;
-      }
+      const label = this.selectedLabel();
 
       const payload: Omit<Beer, 'id'> = {
         order: raw.order,
@@ -267,12 +218,16 @@ export class BeerForm implements OnInit {
           unit: s.unit,
           price: Number(s.price),
         })),
-        ...(labelUrl ? { labelUrl } : {}),
-        ...(labelPath ? { labelPath } : {}),
+        ...(label ? { labelId: label.id, labelUrl: label.url } : {}),
       };
 
       const editingId = this.editingId();
       if (editingId) {
+        // Se removeu o rótulo, limpa os campos
+        if (!label) {
+          (payload as Record<string, unknown>)['labelId'] = null;
+          (payload as Record<string, unknown>)['labelUrl'] = null;
+        }
         await this.beerService.update(editingId, payload);
       } else {
         await this.beerService.create(payload);

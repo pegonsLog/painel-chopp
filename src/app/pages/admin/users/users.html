@@ -67,4 +67,13 @@
       </ul>
     }
   </section>
+
+  @if (confirmingRemove(); as user) {
+    <app-confirm-modal
+      title="Remover acesso"
+      [message]="'Remover acesso de &quot;' + user.email + '&quot; ao painel?\n\nA conta no Firebase Auth não é apagada automaticamente — exclua-a pelo Firebase Console (Authentication > Usuários) se desejar.'"
+      confirmText="Remover"
+      (confirmed)="confirmRemove()"
+      (cancelled)="cancelRemove()" />
+  }
 </div>

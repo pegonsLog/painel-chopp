@@ -24,9 +24,11 @@ export interface Beer {
   abv?: string;
   ibu?: string;
   description: string;
-  /** URL pública do rótulo no Firebase Storage. */
+  /** ID do rótulo no banco de rótulos (collection 'labels'). */
+  labelId?: string;
+  /** URL pública do rótulo (denormalizada do banco de rótulos para exibição rápida). */
   labelUrl?: string;
-  /** Caminho (path) do arquivo no bucket, usado para deleção. */
+  /** @deprecated Caminho antigo — mantido para migração. */
   labelPath?: string;
   /** Cores do gradiente exibido como fallback quando não há rótulo. */
   labelColors?: {

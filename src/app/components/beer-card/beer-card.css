@@ -126,11 +126,46 @@
   display: block;
 }
 
+/* ===== Seção ABV / IBU — retângulos lado a lado ===== */
+.section-abv-ibu {
+  display: flex;
+  gap: 0;
+  border-top: 2px solid #ff7a1a;
+}
+
+.abv-ibu-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.5rem;
+  background: #1a1a1a;
+}
+
+.abv-ibu-box + .abv-ibu-box {
+  border-left: 2px solid #ff7a1a;
+}
+
+.abv-ibu-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #ff7a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.abv-ibu-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
 /* ===== Seção 3: Composição / descrição — fundo preto, texto branco ===== */
 .section-description {
   background: #000000;
-  padding: 0.6rem 0.6rem;
-  flex: 1;
+  padding: 0.45rem 0.6rem;
+  flex: 0.8;
   display: flex;
   align-items: flex-start;
   border-top: 2px solid #ff7a1a;

@@ -1,0 +1,207 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.labels-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card {
+  background: #17171a;
+  border: 1px solid #24242a;
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  color: #ff7a1a;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 400px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.field > span {
+  color: #cfcfd4;
+  font-weight: 500;
+}
+
+.field input[type="text"] {
+  background: #0b0b0d;
+  color: #fff;
+  border: 1px solid #2a2a32;
+  border-radius: 4px;
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+}
+
+.field input[type="text"]:focus {
+  outline: none;
+  border-color: #ff7a1a;
+}
+
+.hint {
+  color: #9a9aa3;
+  font-size: 0.8rem;
+}
+
+.preview img {
+  max-width: 120px;
+  max-height: 150px;
+  object-fit: cover;
+  border: 1px solid #2a2a32;
+  border-radius: 4px;
+}
+
+.feedback {
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  background: rgba(76, 175, 80, 0.12);
+  color: #98dca0;
+  font-size: 0.9rem;
+}
+
+.feedback--error {
+  background: rgba(229, 115, 115, 0.12);
+  color: #f3a7a7;
+}
+
+/* Grid de rótulos */
+.labels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.label-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #0e0e10;
+  border: 1px solid #2a2a32;
+  border-radius: 6px;
+  padding: 0.75rem;
+  align-items: center;
+}
+
+.label-thumb {
+  width: 100%;
+  max-width: 140px;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #2a2a32;
+}
+
+.label-name {
+  font-size: 0.85rem;
+  color: #f1f1f1;
+  text-align: center;
+  word-break: break-word;
+}
+
+.edit-row {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  width: 100%;
+}
+
+.edit-row input {
+  flex: 1;
+  background: #0b0b0d;
+  color: #fff;
+  border: 1px solid #2a2a32;
+  border-radius: 4px;
+  padding: 0.35rem 0.5rem;
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.replace-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  font-size: 0.8rem;
+}
+
+.label-actions {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Botões */
+button {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+button.primary {
+  background: #ff7a1a;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+button.primary:hover:not(:disabled) {
+  background: #ff8f3c;
+}
+
+button.primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button.ghost {
+  background: transparent;
+  border-color: #3a3a42;
+  color: #f1f1f1;
+}
+
+button.ghost:hover {
+  border-color: #ff7a1a;
+  color: #ff7a1a;
+}
+
+button.danger {
+  background: transparent;
+  border-color: #5a1d1d;
+  color: #e57373;
+}
+
+button.danger:hover {
+  background: rgba(229, 115, 115, 0.12);
+}
+
+button.small {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 640px) {
+  .labels-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}

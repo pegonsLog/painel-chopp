@@ -74,24 +74,35 @@
         </div>
       </fieldset>
 
-      <fieldset class="label-upload">
+      <!-- Seletor de rótulo do banco -->
+      <fieldset class="label-select">
         <legend>Rótulo</legend>
-        <input type="file" accept="image/*" (change)="onLabelSelected($event)" />
-        <small class="hint">Tamanho recomendado: 200 × 250 pixels (proporção 4:5) para se ajustar perfeitamente na seção.</small>
-        @if (labelPreviewUrl()) {
-          <div class="preview">
-            <img [src]="labelPreviewUrl()!" alt="Prévia do rótulo selecionado" />
-            <small>Prévia local (não enviada ainda)</small>
-            <button type="button" class="ghost" (click)="clearLabel()">Remover imagem</button>
-          </div>
-        } @else if (existingLabelUrl()) {
-          <div class="preview">
-            <img [src]="existingLabelUrl()!" alt="Rótulo atual" />
-            <small>Rótulo atual - envie outra imagem para substituir</small>
-            <button type="button" class="danger" (click)="removeExistingLabel()">Remover rótulo</button>
+
+        @if (selectedLabel(); as label) {
+          <div class="selected-label">
+            <img [src]="label.url" [alt]="label.name" class="selected-label__img" />
+            <div class="selected-label__info">
+              <span class="selected-label__name">{{ label.name }}</span>
+            </div>
           </div>
         } @else {
-          <p class="hint">Opcional: imagem que será exibida no card do painel. Sem imagem, será exibido o gradiente padrão.</p>
+          <p class="hint">Selecione um rótulo do banco abaixo. Sem rótulo, será exibido o gradiente padrão.</p>
+        }
+
+        @if (labels().length === 0) {
+          <p class="hint">Nenhum rótulo cadastrado. <a routerLink="/admin/rotulos">Adicione rótulos</a> primeiro.</p>
+        } @else {
+          <div class="label-picker">
+            @for (label of labels(); track label.id) {
+              <button type="button"
+                      class="label-option"
+                      [class.label-option--selected]="selectedLabelId() === label.id"
+                      (click)="selectLabel(label.id!)">
+                <img [src]="label.url" [alt]="label.name" loading="lazy" />
+                <span>{{ label.name }}</span>
+              </button>
+            }
+          </div>
         }
       </fieldset>
 

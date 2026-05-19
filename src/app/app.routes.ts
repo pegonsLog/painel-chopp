@@ -36,6 +36,11 @@ export const routes: Routes = [
           import('./pages/admin/beer-form/beer-form').then((m) => m.BeerForm),
       },
       {
+        path: 'rotulos',
+        loadComponent: () =>
+          import('./pages/admin/labels/labels').then((m) => m.LabelsAdmin),
+      },
+      {
         path: 'preview',
         loadComponent: () =>
           import('./pages/admin/panel-preview/panel-preview').then((m) => m.PanelPreview),

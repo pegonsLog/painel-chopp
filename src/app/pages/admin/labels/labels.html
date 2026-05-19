@@ -1,0 +1,87 @@
+<div class="labels-page">
+  <!-- Formulário de criação -->
+  <section class="card">
+    <h2>Adicionar rótulo ao banco</h2>
+    <div class="create-form">
+      <label class="field">
+        <span>Nome do rótulo *</span>
+        <input type="text" [ngModel]="newLabelName()" (ngModelChange)="newLabelName.set($event)"
+               placeholder="Ex.: Stardust NEIPA" />
+      </label>
+
+      <label class="field">
+        <span>Imagem *</span>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+        <small class="hint">Recomendado: 200 × 250 px (proporção 4:5)</small>
+      </label>
+
+      @if (newLabelPreview(); as preview) {
+        <div class="preview">
+          <img [src]="preview" alt="Prévia do rótulo" />
+        </div>
+      }
+
+      <button type="button" class="primary" [disabled]="saving()" (click)="createLabel()">
+        {{ saving() ? 'Salvando...' : 'Adicionar rótulo' }}
+      </button>
+    </div>
+
+    @if (feedback(); as fb) {
+      <p class="feedback" [class.feedback--error]="fb.type === 'error'">{{ fb.message }}</p>
+    }
+  </section>
+
+  <!-- Lista de rótulos -->
+  <section class="card">
+    <h2>Banco de rótulos ({{ labels().length }})</h2>
+
+    @if (labels().length === 0) {
+      <p class="hint">Nenhum rótulo cadastrado ainda.</p>
+    } @else {
+      <div class="labels-grid">
+        @for (label of labels(); track label.id) {
+          <div class="label-item">
+            <img [src]="label.url" [alt]="label.name" class="label-thumb" loading="lazy" />
+
+            @if (editingId() === label.id) {
+              <div class="edit-row">
+                <input type="text" [ngModel]="editingName()" (ngModelChange)="editingName.set($event)" />
+                <button type="button" class="ghost small" (click)="saveEdit(label)">✓</button>
+                <button type="button" class="ghost small" (click)="cancelEdit()">✕</button>
+              </div>
+            } @else {
+              <span class="label-name">{{ label.name }}</span>
+            }
+
+            @if (replacingId() === label.id) {
+              <div class="replace-row">
+                <input type="file" accept="image/*" (change)="onReplaceFileSelected($event)" />
+                <button type="button" class="ghost small" [disabled]="!replaceFile() || saving()" (click)="confirmReplace(label)">Enviar</button>
+                <button type="button" class="ghost small" (click)="cancelReplace()">Cancelar</button>
+              </div>
+            }
+
+            <div class="label-actions">
+              @if (editingId() !== label.id) {
+                <button type="button" class="ghost small" (click)="startEdit(label)">Renomear</button>
+              }
+              @if (replacingId() !== label.id) {
+                <button type="button" class="ghost small" (click)="startReplace(label)">Trocar imagem</button>
+              }
+              <button type="button" class="danger small" (click)="removeLabel(label)">Remover</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  @if (confirmingRemove(); as label) {
+    <app-confirm-modal
+      title="Remover rótulo"
+      [message]="'Remover o rótulo &quot;' + label.name + '&quot;? Chopps que usam este rótulo ficarão sem imagem.'"
+      confirmText="Remover"
+      (confirmed)="confirmRemove()"
+      (cancelled)="cancelRemove()" />
+  }
+</div>

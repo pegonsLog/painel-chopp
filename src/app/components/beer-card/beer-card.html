@@ -29,6 +29,24 @@
     }
   </div>
 
+  <!-- Seção ABV / IBU -->
+  @if (beer().abv || beer().ibu) {
+    <div class="section-abv-ibu">
+      @if (beer().abv) {
+        <div class="abv-ibu-box">
+          <span class="abv-ibu-label">ABV</span>
+          <span class="abv-ibu-value">{{ beer().abv }}</span>
+        </div>
+      }
+      @if (beer().ibu) {
+        <div class="abv-ibu-box">
+          <span class="abv-ibu-label">IBU</span>
+          <span class="abv-ibu-value">{{ beer().ibu }}</span>
+        </div>
+      }
+    </div>
+  }
+
   <!-- Seção 3: Composição -->
   <div class="section-description">
     <p class="description">{{ beer().description }}</p>

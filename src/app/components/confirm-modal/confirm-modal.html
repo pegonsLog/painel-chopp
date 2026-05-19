@@ -1,0 +1,15 @@
+<div class="modal-backdrop" (click)="cancel()">
+  <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+    <h3 class="modal__title">{{ title() }}</h3>
+    <p class="modal__message">{{ message() }}</p>
+    <div class="modal__actions">
+      <button type="button" class="ghost" (click)="cancel()">Cancelar</button>
+      <button type="button"
+              [class.danger]="danger()"
+              [class.primary]="!danger()"
+              (click)="confirm()">
+        {{ confirmText() }}
+      </button>
+    </div>
+  </div>
+</div>

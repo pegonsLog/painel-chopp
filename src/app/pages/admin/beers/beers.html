@@ -80,4 +80,13 @@
       </div>
     </li>
   </ng-template>
+
+  @if (confirmingRemove(); as beer) {
+    <app-confirm-modal
+      title="Excluir chope"
+      [message]="'Remover o chope #' + beer.order + ' — ' + beer.name + '?'"
+      confirmText="Excluir"
+      (confirmed)="confirmRemove()"
+      (cancelled)="cancelRemove()" />
+  }
 </div>

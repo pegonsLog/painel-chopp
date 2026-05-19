@@ -16,6 +16,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Banco de rótulos: leitura pública, escrita só para admins.
+    match /labels/{labelId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Qualquer usuário autenticado pode ler a lista (para carregar o próprio
     // perfil). Apenas admins já cadastrados criam/editam outros; o próprio
     // usuário pode atualizar/excluir o próprio doc.

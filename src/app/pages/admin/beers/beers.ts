@@ -5,10 +5,11 @@ import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 
 import { BeerService } from '../../../services/beer.service';
 import { Beer, BeerSize, formatSizeLabel } from '../../../models/beer.model';
+import { ConfirmModal } from '../../../components/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-beers-admin',
-  imports: [DecimalPipe, NgTemplateOutlet],
+  imports: [DecimalPipe, NgTemplateOutlet, ConfirmModal],
   templateUrl: './beers.html',
   styleUrl: './beers.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +34,7 @@ export class BeersAdmin {
   protected readonly swapMode = signal(false);
   protected readonly saving = signal(false);
   protected readonly feedback = signal<{ type: 'success' | 'error'; message: string } | null>(null);
+  protected readonly confirmingRemove = signal<Beer | null>(null);
 
   protected formatSize(size: BeerSize): string {
     return formatSizeLabel(size);
@@ -52,7 +54,17 @@ export class BeersAdmin {
 
   protected async remove(beer: Beer): Promise<void> {
     if (!beer.id) return;
-    if (!confirm(`Remover o chope #${beer.order} - ${beer.name}?`)) return;
+    this.confirmingRemove.set(beer);
+  }
+
+  protected cancelRemove(): void {
+    this.confirmingRemove.set(null);
+  }
+
+  protected async confirmRemove(): Promise<void> {
+    const beer = this.confirmingRemove();
+    if (!beer?.id) return;
+    this.confirmingRemove.set(null);
     try {
       await this.beerService.remove(beer);
       this.feedback.set({ type: 'success', message: 'Chope removido.' });
