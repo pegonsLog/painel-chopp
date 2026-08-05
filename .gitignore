@@ -53,3 +53,11 @@ ui-debug.log
 src/environments/environment.ts
 src/environments/environment.prod.ts
 
+# Secrets / tokens
+*token*.txt
+*Token*.txt
+*.secret
+*secret*.txt
+.env
+.env.*
+
