@@ -49,7 +49,13 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<void> {
-    await signInWithEmailAndPassword(this.auth, email, password);
+    const cred = await signInWithEmailAndPassword(this.auth, email, password);
+    // Popula a sessão de imediato: a subscription do `authState` também vai
+    // disparar, mas de forma assíncrona (e após uma leitura no Firestore),
+    // o que criava uma corrida com a navegação pós-login (guard via
+    // `isAuthenticated() === false` e redirecionava de volta pro /login).
+    this.sessionSignal.set(await this.toSessionInfo(cred.user));
+    this.readySignal.set(true);
   }
 
   async logout(): Promise<void> {
