@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { FirebaseError } from 'firebase/app';
 
 import { LabelService } from '../../../services/label.service';
 import { Label } from '../../../models/label.model';
@@ -51,6 +52,12 @@ export class LabelsAdmin {
       return;
     }
 
+    const invalid = this.validateFile(file);
+    if (invalid) {
+      this.feedback.set({ type: 'error', message: invalid });
+      return;
+    }
+
     this.saving.set(true);
     this.feedback.set(null);
 
@@ -63,11 +70,54 @@ export class LabelsAdmin {
       this.newLabelPreview.set(null);
       this.feedback.set({ type: 'success', message: 'Rótulo adicionado ao banco.' });
     } catch (err) {
-      console.error(err);
-      this.feedback.set({ type: 'error', message: 'Falha ao salvar o rótulo.' });
+      console.error('[labels] falha ao criar rótulo:', err);
+      this.feedback.set({ type: 'error', message: this.describeError(err, 'salvar o rótulo') });
     } finally {
       this.saving.set(false);
     }
+  }
+
+  /**
+   * Espelha as restrições das regras do Storage (`storage.rules`) para que a
+   * causa apareça antes do upload, em vez de virar um erro opaco de permissão.
+   */
+  private validateFile(file: File): string | null {
+    const MAX_BYTES = 5 * 1024 * 1024;
+    if (file.size >= MAX_BYTES) {
+      const mb = (file.size / 1024 / 1024).toFixed(1);
+      return `Imagem tem ${mb} MB. O limite é 5 MB — reduza a imagem e tente novamente.`;
+    }
+    if (!file.type) {
+      return `Não foi possível identificar o tipo do arquivo "${file.name}". Salve-o como JPG ou PNG e tente novamente.`;
+    }
+    if (!file.type.startsWith('image/')) {
+      return `O arquivo "${file.name}" é do tipo ${file.type}, que não é uma imagem aceita. Use JPG ou PNG.`;
+    }
+    return null;
+  }
+
+  /** Traduz o erro do Firebase, mantendo o código para diagnóstico. */
+  private describeError(err: unknown, action: string): string {
+    if (err instanceof FirebaseError) {
+      switch (err.code) {
+        case 'storage/unauthorized':
+          return 'Sem permissão para enviar a imagem. Faça login novamente e verifique se sua conta é administradora.';
+        case 'storage/unauthenticated':
+          return 'Sessão expirada. Entre novamente para enviar a imagem.';
+        case 'storage/quota-exceeded':
+          return 'A cota do Storage foi excedida. Verifique o plano do projeto no Firebase.';
+        case 'storage/retry-limit-exceeded':
+        case 'storage/canceled':
+          return 'O upload foi interrompido. Verifique a conexão e tente novamente.';
+        case 'permission-denied':
+          return 'A imagem subiu, mas o cadastro do rótulo foi bloqueado: sua conta não está na lista de administradores.';
+        case 'unavailable':
+          return 'Firestore indisponível no momento. Tente novamente em instantes.';
+        default:
+          return `Falha ao ${action}: ${err.code}`;
+      }
+    }
+    return `Falha ao ${action}${err instanceof Error ? `: ${err.message}` : '.'}`;
   }
 
   protected startEdit(label: Label): void {
@@ -87,8 +137,8 @@ export class LabelsAdmin {
       await this.labelService.updateName(label.id!, name);
       this.cancelEdit();
     } catch (err) {
-      console.error(err);
-      this.feedback.set({ type: 'error', message: 'Falha ao renomear.' });
+      console.error('[labels] falha ao renomear rótulo:', err);
+      this.feedback.set({ type: 'error', message: this.describeError(err, 'renomear o rótulo') });
     }
   }
 
@@ -112,14 +162,20 @@ export class LabelsAdmin {
     const file = this.replaceFile();
     if (!file) return;
 
+    const invalid = this.validateFile(file);
+    if (invalid) {
+      this.feedback.set({ type: 'error', message: invalid });
+      return;
+    }
+
     this.saving.set(true);
     try {
       await this.labelService.replaceImage(label, file);
       this.cancelReplace();
       this.feedback.set({ type: 'success', message: 'Imagem substituída.' });
     } catch (err) {
-      console.error(err);
-      this.feedback.set({ type: 'error', message: 'Falha ao substituir imagem.' });
+      console.error('[labels] falha ao substituir imagem:', err);
+      this.feedback.set({ type: 'error', message: this.describeError(err, 'substituir a imagem') });
     } finally {
       this.saving.set(false);
     }
@@ -141,8 +197,8 @@ export class LabelsAdmin {
       await this.labelService.remove(label);
       this.feedback.set({ type: 'success', message: 'Rótulo removido.' });
     } catch (err) {
-      console.error(err);
-      this.feedback.set({ type: 'error', message: 'Falha ao remover.' });
+      console.error('[labels] falha ao remover rótulo:', err);
+      this.feedback.set({ type: 'error', message: this.describeError(err, 'remover o rótulo') });
     }
   }
 }
